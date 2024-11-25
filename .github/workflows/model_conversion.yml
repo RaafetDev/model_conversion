@@ -1,0 +1,41 @@
+name: Convert .h5 Model to TensorFlow.js
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch (change as needed)
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests to the main branch
+
+jobs:
+  convert-model:
+    runs-on: ubuntu-latest  # Use Ubuntu for the job
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3  # Checkout the repository code
+
+    - name: Set up Python environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'  # Use Python 3.8 or other compatible versions
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tensorflow==2.12.0 tensorflowjs numpy  # Install required dependencies
+
+    - name: Convert model from .h5 to tfjs format
+      run: |
+        tensorflowjs_converter --input_format keras models/model.h5 models/tfjs_model
+
+    - name: Commit the converted model
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add models/tfjs_model/
+        git commit -m 'Add converted TensorFlow.js model'
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for pushing changes
