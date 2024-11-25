@@ -38,4 +38,4 @@ jobs:
         git commit -m 'Add converted TensorFlow.js model'
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for pushing changes
+        GITHUB_TOKEN: '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'  # GitHub token for pushing changes
