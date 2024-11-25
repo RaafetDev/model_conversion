@@ -1,12 +1,15 @@
-name: Convert .h5 Model to TensorFlow.js
+name: Convert .h5 Model to TensorFlow.js and Download
 
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch (change as needed)
+      - main
   pull_request:
     branches:
-      - main  # Trigger on pull requests to the main branch
+      - main
+
+permissions:
+  contents: read  # Read permission for the repository contents (no need to write)
 
 jobs:
   convert-model:
@@ -19,7 +22,7 @@ jobs:
     - name: Set up Python environment
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8'  # Use Python 3.8 or other compatible versions
+        python-version: '3.8'  # Use Python 3.8
 
     - name: Install dependencies
       run: |
@@ -28,13 +31,14 @@ jobs:
 
     - name: Convert model from .h5 to tfjs format
       run: |
-        tensorflowjs_converter --input_format keras models/model.h5 models/tfjs_model
+        tensorflowjs_converter --input_format keras models/model.h5 models/tfjs_model  # Convert .h5 to TensorFlow.js format
 
-    - name: Commit the converted model
+    - name: Zip the converted TensorFlow.js model
       run: |
-        git config --global user.name 'GitHub Actions'
-        git config --global user.email 'actions@github.com'
-        git add models/tfjs_model/
-        git commit -m 'Add converted TensorFlow.js model'
-        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+        zip -r models/tfjs_model.zip models/tfjs_model  # Zip the model directory into a .zip file
 
+    - name: Upload the zip file as an artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: tfjs-model  # Name of the artifact
+        path: models/tfjs_model.zip  # Path to the zip file
