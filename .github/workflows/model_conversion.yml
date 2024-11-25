@@ -36,6 +36,5 @@ jobs:
         git config --global user.email 'actions@github.com'
         git add models/tfjs_model/
         git commit -m 'Add converted TensorFlow.js model'
-        git push
-      env:
-        GITHUB_TOKEN: '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'  # GitHub token for pushing changes
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+
